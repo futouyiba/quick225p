@@ -1,8 +1,11 @@
+
+local scale=0.2
+
 local SpriteItem = class("SpriteItem", function(batchNode, row, col, imageIndex)
-    math.newrandomseed()
+ --   math.newrandomseed()
     imageIndex = imageIndex or math.round(math.random()*1000)%5 + 1
     local item = display.newSprite("#dialogue_portrait_"  .. imageIndex .. '.jpg')
-    item:setScale(0.1)
+    item:setScale(scale)
     item.m_imageIndex, item.m_row, item.m_col = imageIndex, row, col
     item.m_batchNode = batchNode
     item.m_isActive = false
@@ -30,7 +33,7 @@ function SpriteItem:setActive(active)
 end
 
 function SpriteItem.getContentWidth() 
-	return 37
+	return 371*scale
 end
 
 

@@ -41,13 +41,18 @@ function MainScene:ctor()
     touchLayer:addNodeEventListener(cc.NODE_TOUCH_EVENT, function (event)
         print(event.name, event.x, event.y)
         if(event.name == "ended") then
-            self:touchEndEvent(event.x, event.y)
+    --        self:touchEndEvent(event.x, event.y)
         else
             return true
         end
     end)
     self:addChild(touchLayer)
     self:initMartix()
+    self:scheduleUpdate()
+    self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function(dt)
+--【】可以看出quick当中这个函数是不一定叫update的
+    	return self:update1(dt)
+    	end)
 end
 
 function MainScene:onEnter()
@@ -56,7 +61,27 @@ end
 function MainScene:onExit()
 end
 
+function MainScene:update1(dt)
+--	print(dt)
+	local m_isAnimationing=true
+	for k,v in pairs(self.m_matrix) do
+		if (v~=nil and v:getNumberOfRunningActions()>0)
+--		if v:getNumberOfRunningActions()>0
+			then m_isAnimationing=false
+		end
+	end
+	if not m_isAnimationing then
+--		self:checkAndRemoveChain()
+	end
+		
+		
+end
+
+function getColChain()
+
+
 function MainScene:initMartix()
+	math.newrandomseed()
     for row = 0, self.m_rowLength-1 do
         for col = 1, self.m_colLength do
             if (1 == row and 1 == col) then
@@ -70,6 +95,7 @@ end
  
 function MainScene:createAndDropItem(row, col, imgIndex)
     local newItem = SpriteItem.new(self.m_batchNode, row, col, imgIndex)
+--    print(newItem.m_isActive)  【】说明不用生成synthesis函数，直接用lua  metatable的属性读取就可以了
     local endPosition = self:positionOfItem(row, col)
     local startPosition = ccp(endPosition.x, endPosition.y + display.height / 2)
     newItem:setPosition(startPosition)
@@ -78,7 +104,7 @@ function MainScene:createAndDropItem(row, col, imgIndex)
     self.m_matrix[row * self.m_colLength + col] = newItem
     self.m_batchNode:addChild(newItem)
 end
- 
+
 function MainScene:positionOfItem(row, col)
     local x = self.m_matrixLeftBottomX + (SpriteItem.getContentWidth() + ITEM_GAP) * (col-1) + SpriteItem.getContentWidth() / 2
     local y = self.m_matrixLeftBottomY + (SpriteItem.getContentWidth() + ITEM_GAP) * (row) + SpriteItem.getContentWidth() / 2
