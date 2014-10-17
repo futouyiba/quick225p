@@ -1,4 +1,4 @@
-local ITEM_GAP=5
+local ITEM_GAP=0
 
 local SpriteItem=import("..class.spriteItem")
 
@@ -9,8 +9,8 @@ end)
 function MainScene:ctor()
  
  --   display.newSprite("background.png"):pos(display.cx,display.cy):addTo(self)
-    display.addSpriteFramesWithFile("sanxiao.plist", "sanxiao.pvr")
- 
+    display.addSpriteFramesWithFile("newsanxiao.plist", "newsanxiao.png")
+    print("newsanxiao loaded!")
     self.m_level = 1
     self.m_rowLength = 10
     self.m_colLength = 6
@@ -22,7 +22,7 @@ function MainScene:ctor()
     self.m_matrixLeftBottomY = (display.height - SpriteItem.getContentWidth() * self.m_rowLength - (self.m_rowLength - 1) * ITEM_GAP) / 2
  
     -- 创建BatchNode
-    self.m_batchNode = display.newBatchNode("sanxiao.pvr")
+    self.m_batchNode = display.newBatchNode("newsanxiao.png")
     self:addChild(self.m_batchNode)
  
     -- init array
@@ -40,15 +40,16 @@ function MainScene:ctor()
     touchLayer:setTouchEnabled(true)
     touchLayer:addNodeEventListener(cc.NODE_TOUCH_EVENT, function (event)
         print(event.name, event.x, event.y)
-        if(event.name == "ended") then
-    --        self:touchEndEvent(event.x, event.y)
-        else
-            return true
-        end
+--        if(event.name == "ended") then
+            self:onTouch(event)
+ --       else
+--            return true
+ --       end
     end)
     self:addChild(touchLayer)
     self:initMartix()
     self:scheduleUpdate()
+--    self.m_matrix[1]:setActive(true)
     self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function(dt)
 --【】可以看出quick当中这个函数是不一定叫update的
     	return self:update1(dt)
@@ -56,6 +57,7 @@ function MainScene:ctor()
 end
 
 function MainScene:onEnter()
+    self.m_matrix[1]:setActive(true)
 end
 
 function MainScene:onExit()
@@ -73,11 +75,56 @@ function MainScene:update1(dt)
 	if not m_isAnimationing then
 --		self:checkAndRemoveChain()
 	end
-		
-		
 end
 
-function getColChain()
+function MainScene:onTouch(event)
+    if event.name=="began" then
+        self.srcSushiKey,self.m_srcSushi=self:sushiOfPoint(event.x, event.y)
+        if self.m_srcSushi==nil then
+            print("touched empty space")
+            return false
+        else
+            self.m_srcSushi:setActive(true)
+            return true
+        end
+    end
+    if event.name=="moved" then
+        return
+    end
+    if event.name=="ended" then
+        self.destSushiKey,self.m_destSushi=self:sushiOfPoint(event.x, event.y)
+        if self.m_srcSushi==self.m_destSushi then
+            self.m_srcSushi:setActive(false)
+            return
+        else
+            self:exchangeSushi()
+        end
+
+    end
+end
+
+function MainScene:exchangeSushi()
+--先不加矩阵中交换、属性m row和列的交换
+    local srcX,srcY = self.m_srcSushi:getPosition()
+    local destX,destY = self.m_destSushi:getPosition()
+        self.m_srcSushi:stopAllActions()
+        self.m_destSushi:stopAllActions()
+        self.m_srcSushi:runAction(cc.MoveTo:create(time,{x=destX,y=destY}))
+        self.m_destSushi:runAction(cc.MoveTo:create(time,{x=srcX,y=srcY}))
+
+end
+
+
+--先用更费资源的方式获取，以后有余力时再重构.其实只要用数学公式算就行了
+function MainScene:sushiOfPoint(x,y)
+    for k,v in pairs(self.m_matrix) do
+        if v:getCascadeBoundingBox():containsPoint(cc.PointMake(x,y)) then
+            return k,v
+        end
+    end
+    return nil
+
+end
 
 
 function MainScene:initMartix()

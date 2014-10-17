@@ -17,7 +17,8 @@ function SpriteItem:setActive(active)
  
     local frame
     if (active) then
-        frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '_alpha_mask.png')
+     --   frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '_alpha_mask.png')
+     frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '.png')
     else
         frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '.jpg')
     end
@@ -33,7 +34,7 @@ function SpriteItem:setActive(active)
 end
 
 function SpriteItem.getContentWidth() 
-	return 371*scale
+	return 400*scale
 end
 
 
