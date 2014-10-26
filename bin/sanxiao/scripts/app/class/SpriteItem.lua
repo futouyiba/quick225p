@@ -12,7 +12,6 @@ local SpriteItem = class("SpriteItem", function(batchNode, row, col, imageIndex)
 function SpriteItem:setActive(active)
     self.m_isActive = active
  
-    local frame
     if (active) then
      --   frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '_alpha_mask.png')
      frame = display.newSpriteFrame("#dialogue_portrait_"  .. self.m_imageIndex .. '.png')

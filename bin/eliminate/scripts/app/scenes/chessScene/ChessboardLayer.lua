@@ -24,6 +24,7 @@ function ChessboardLayer:ctor()
 
 	cellLayer = display.newLayer():addTo(self)
 	local size = chessBoardBg:getContentSize()
+	--【】这里为什么不是直接setcontentsize（size）
 	cellLayer:setContentSize(CCSize(size.width, size.height))
 	local typeInt = 1
 	for i=1,13 do
